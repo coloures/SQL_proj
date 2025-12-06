@@ -1,0 +1,20 @@
+create table s_psql_dds.t_dm_task (
+	user_id bigint primary key,
+	name varchar(100) not null,
+	email varchar(100) not null,
+    status_id int not null,
+	status varchar(100) not null,
+    region_id int not null,
+	region varchar(100) not null,
+    product_type_id int not null,
+	product_type varchar(100) not null,
+	order_date DATE not null,
+	delivery_date DATE not null,
+    payment_method_id int not null,
+	payment_method varchar not null,
+	price integer not null,
+    Foreign key (status_id) references s_psql_dds.t_sql_cat_status(status_id),
+    Foreign key (region_id) references s_psql_dds.t_sql_cat_region(region_id),
+    Foreign key (product_type_id) references s_psql_dds.t_sql_cat_product_type(product_type_id),
+    Foreign key (payment_method_id) references s_psql_dds.t_sql_cat_payment_method(payment_method_id)
+)

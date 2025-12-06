@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import random
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 def get_dataset(n_rows=100000):
 
@@ -38,7 +38,7 @@ def get_dataset(n_rows=100000):
         
         # Даты
         order_days_offset = random.randint(0, total_days)
-        order_date = start_date + timedelta(days=order_days_offset)
+        order_date = (start_date + timedelta(days=order_days_offset)).date()
         delivery_offset = random.randint(-5, 20)  # иногда до заказа, иногда через 3 недели
         delivery_date = order_date + timedelta(days=delivery_offset)
         

@@ -3,8 +3,11 @@ RETURNS VOID
 LANGUAGE plpgsql
 AS $$
 DECLARE
-    temp_date DATE;
+    cnt integer;
 BEGIN
+    DELETE FROM s_psql_dds.t_sql_source_structured
+    WHERE delivery_date BETWEEN start_date AND end_date;
+
     INSERT INTO s_psql_dds.t_sql_source_structured (
         user_id, name, email, status, region, product_type, 
         order_date, delivery_date, payment_method, price
@@ -15,14 +18,14 @@ BEGIN
         email,
         CASE
             WHEN status ~* 'активен' THEN
-                'Активен'
+                LOWER('Активен')
             WHEN status ~* 'ожидает подтверждения' THEN
-                'Ожидает подтверждения'
+                LOWER('Ожидает подтверждения')
             WHEN status ~* 'удалён' THEN
-                'Удалён'
+                LOWER('Удалён')
             WHEN status ~* 'неактивен' THEN
-                'Неактивен'
-            ELSE 'Приостановлен'
+                LOWER('Неактивен')
+            ELSE LOWER('Приостановлен')
         END AS status,
         region,
         product_type,
@@ -69,6 +72,10 @@ BEGIN
         ) BETWEEN start_date AND end_date
         AND
         (payment_method is not null)
-    ORDER BY user_id, order_date DESC;
+    ORDER BY user_id, order_date::DATE DESC;
+    SELECT COUNT(*) INTO cnt 
+    from s_psql_dds.t_sql_source_structured 
+    where delivery_date BETWEEN start_date AND end_date;
+    RAISE NOTICE 'Загружено записей: %', cnt;
 END;
 $$;

@@ -4,7 +4,7 @@ from src.fill_structured_table import fill_structured_table
 
 def running(start_date, end_date):
     # 1. Создание датасета с данными
-    data = get_dataset(500_000)
+    data = get_dataset(125_000)
     
     # 2. Загрузка данных в БД
     try: 

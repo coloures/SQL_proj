@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, DATE
 from config import db_host, db_name, db_password, db_port, db_user, schema, table_name
 
 def load_data(data):
@@ -15,6 +15,9 @@ def load_data(data):
     data.to_sql(
         name=table_name,
         con=engine,
+        dtype={
+            'order_date': DATE
+        },
         schema = schema,
         if_exists='append',  # или 'replace', 'fail'
         index=False,         # не сохранять индекс как отдельный столбец
