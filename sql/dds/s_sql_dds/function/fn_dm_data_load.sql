@@ -5,14 +5,44 @@ AS $$
 DECLARE
     cnt integer;
 BEGIN
-    INSERT into s_psql_dds.t_sql_cat_payment_method (payment_method)
-    select distinct payment_method from s_psql_dds.t_sql_source_structured;
-    INSERT into s_psql_dds.t_sql_cat_product_type (product_type)
-    select distinct product_type from s_psql_dds.t_sql_source_structured;
-    INSERT into s_psql_dds.t_sql_cat_region (region)
-    select distinct region from s_psql_dds.t_sql_source_structured;
-    INSERT into s_psql_dds.t_sql_cat_status (status)
-    select distinct status from s_psql_dds.t_sql_source_structured;
+    DELETE FROM s_psql_dds.t_dm_task
+    WHERE order_date BETWEEN start_date AND end_date;
+    
+    INSERT INTO s_psql_dds.t_sql_cat_payment_method (payment_method)
+    SELECT DISTINCT s.payment_method
+    FROM s_psql_dds.t_sql_source_structured s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM s_psql_dds.t_sql_cat_payment_method c
+        WHERE c.payment_method = s.payment_method
+    );
+    
+    INSERT INTO s_psql_dds.t_sql_cat_product_type (product_type)
+    SELECT DISTINCT s.product_type
+    FROM s_psql_dds.t_sql_source_structured s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM s_psql_dds.t_sql_cat_product_type c
+        WHERE c.product_type = s.product_type
+    );
+
+    INSERT INTO s_psql_dds.t_sql_cat_region (region)
+    SELECT DISTINCT s.region
+    FROM s_psql_dds.t_sql_source_structured s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM s_psql_dds.t_sql_cat_region c
+        WHERE c.region = s.region
+    );
+    
+    INSERT INTO s_psql_dds.t_sql_cat_status (status)
+    SELECT DISTINCT s.status
+    FROM s_psql_dds.t_sql_source_structured s
+    WHERE NOT EXISTS (
+        SELECT 1
+        FROM s_psql_dds.t_sql_cat_status c
+        WHERE c.status = s.status
+    );
 
     with cte (user_id, name, email, status_id, status, 
     region_id, region, product_type_id, product_type, 

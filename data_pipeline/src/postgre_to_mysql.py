@@ -26,6 +26,8 @@ def transfer_pg_to_mysql():
     )
     mysql_cur = mysql_conn.cursor()
 
+    mysql_cur.execute("TRUNCATE TABLE t_dm_task_mysql")
+    
     sql = """
     INSERT INTO t_dm_task_mysql 
     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
