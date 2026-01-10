@@ -4,5 +4,5 @@ SELECT
     check_type,
     COUNT(*) AS checks_cnt,
     SUM(CASE WHEN status = 'failed' THEN 1 ELSE 0 END) AS failed_cnt
-FROM s_sql_dds.t_dq_check_results
+FROM s_psql_dds.t_dq_check_results
 GROUP BY 1,2;

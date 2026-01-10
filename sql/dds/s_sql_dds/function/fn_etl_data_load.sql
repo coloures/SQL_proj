@@ -6,7 +6,8 @@ DECLARE
     cnt integer;
 BEGIN
     DELETE FROM s_psql_dds.t_sql_source_structured
-    WHERE delivery_date BETWEEN start_date AND end_date;
+    WHERE order_date BETWEEN start_date AND end_date
+        OR delivery_date BETWEEN start_date AND end_date;
 
     INSERT INTO s_psql_dds.t_sql_source_structured (
         user_id, name, email, status, region, product_type, 
@@ -70,6 +71,14 @@ BEGIN
                     TO_DATE(delivery_date, 'DD/MM/YYYY')
             END
         ) BETWEEN start_date AND end_date
+        AND (
+            CASE
+                WHEN delivery_date ~ '^[0-9]{4}-[0-9]{2}-[0-9]{2}$' THEN 
+                    delivery_date::DATE
+                WHEN delivery_date ~ '^[0-9]{2}/[0-9]{2}/[0-9]{4}$' THEN 
+                    TO_DATE(delivery_date, 'DD/MM/YYYY')
+            END
+        ) >= order_date::DATE
         AND
         (payment_method is not null)
     ORDER BY user_id, order_date::DATE DESC;

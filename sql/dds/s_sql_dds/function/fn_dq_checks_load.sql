@@ -25,7 +25,7 @@ BEGIN
         FROM s_psql_dds.v_dm_task;
 
 
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         (check_type, table_name, status, error_message)
         VALUES (
             'completeness',
@@ -34,16 +34,16 @@ BEGIN
             'NULL percent = ' || v_cnt || '%'
         );
     EXCEPTION WHEN OTHERS THEN
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         VALUES (DEFAULT, 'completeness', 'v_dm_task', DEFAULT, 'error', SQLERRM);
     END;
 
     BEGIN
-        SELECT COUNT(*) - COUNT(DISTINCT user_id, order_date)
+        SELECT COUNT(*) - COUNT(DISTINCT (user_id, order_date))
         INTO v_cnt
         FROM s_psql_dds.v_dm_task;
 
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         VALUES (
             DEFAULT,
             'uniqueness',
@@ -66,7 +66,7 @@ BEGIN
             'ожидает подтверждения'
         );
 
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         VALUES (
             DEFAULT,
             'validity',
@@ -83,7 +83,7 @@ BEGIN
         FROM s_psql_dds.v_dm_task
         WHERE delivery_date < order_date;
 
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         VALUES (
             DEFAULT,
             'consistency',
@@ -98,14 +98,14 @@ BEGIN
         SELECT
             ABS(
                 (SELECT COUNT(*) FROM s_psql_dds.t_sql_source_structured
-                 WHERE delivery_date BETWEEN start_dt AND end_dt)
+                    WHERE order_date BETWEEN start_dt AND end_dt)
                 -
                 (SELECT COUNT(*) FROM s_psql_dds.v_dm_task
-                 WHERE order_date BETWEEN start_dt AND end_dt)
+                    WHERE order_date BETWEEN start_dt AND end_dt)
             )
         INTO v_cnt;
 
-        INSERT INTO s_sql_dds.t_dq_check_results
+        INSERT INTO s_psql_dds.t_dq_check_results
         VALUES (
             DEFAULT,
             'accuracy',
